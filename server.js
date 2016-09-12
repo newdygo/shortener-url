@@ -32,7 +32,7 @@ app.route(/new\/(http|https|ftp|ftps)\:\/\//).get(function (req, res) {
                   
           if (data.ops[0] !== undefined) {
             
-            var url_res = {original_url: url, short_url: 'https://fcc-projects-newdygo.c9users.io/' + data.ops[0]._id};
+            var url_res = {original_url: url, short_url: 'https://ionit-fcc-shortener-url.herokuapp.com//' + data.ops[0]._id};
             
             res.writeHead(200, {'Content-Type': 'application/json'});
             res.write(JSON.stringify(url_res));
