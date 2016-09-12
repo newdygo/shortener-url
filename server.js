@@ -5,7 +5,6 @@ var objectId = require('mongodb').ObjectId
 var app = express();
 
 var connectionString = 'mongodb://newdygo:newdygo99894517@ds029436.mlab.com:29436/shortener-url-api';
-var id;
 
 app.use(/new\/(http|https|ftp|ftps)\:\/\//, function (req, res, next) {
   next();
@@ -22,7 +21,6 @@ app.use('/:id', function (req, res, next) {
 app.route(/new\/(http|https|ftp|ftps)\:\/\//).get(function (req, res) {
  
   var url = req.url.replace('new/', '');
-  var url_res = {original_url: url, short_url: id};
   
   if (/(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ;,.\/?%&=]*)?/.test(url) || /(ftp(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ;,.\/?%&=]*)?/.test(url)) {
     
@@ -31,19 +29,21 @@ app.route(/new\/(http|https|ftp|ftps)\:\/\//).get(function (req, res) {
       if (!err) {
         
         db.collection('urls').insert({url: url}, function(err2, data) {
-          
-          id = 'https://ionit-fcc-shortener-url.herokuapp.com/' + data.ops[0]._id;
-          console.log('LOGGINS: ' + id);
+                  
+          if (data.ops[0] !== undefined) {
+            
+            var url_res = {original_url: url, short_url: 'https://fcc-projects-newdygo.c9users.io/' + data.ops[0]._id};
+            
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.write(JSON.stringify(url_res));
+            res.end();
+          }
         });
         
         db.close();
       }
     });
   }
-  
-  res.writeHead(200, {'Content-Type': 'application/json'});
-  res.write(JSON.stringify(url_res));
-  res.end();
 });
 
 app.route(/new\/*/).get(function (req, res) {
@@ -58,7 +58,9 @@ app.route('/:id').get(function (req, res) {
   
   var id = req.url.replace('/', '');
   
-  mongodb.connect(connectionString, function(err, db) {
+  if (id.length === 12 || id.length === 24) {
+    
+    mongodb.connect(connectionString, function(err, db) {
     
       if (!err) {
         
@@ -67,14 +69,26 @@ app.route('/:id').get(function (req, res) {
           
         }).toArray(function(err2, data) {
           
-          res.redirect(data[0].url);
+          if (data[0] !== undefined) {
+            
+            res.redirect(data[0].url);
+          }
+          else {
+            
+            res.writeHead(404, {'Content-Type': 'application/json'});
+            res.write('INVALID URL!!');
+            res.end();
+          }
         });
       }
-  });
-  
-  res.writeHead(404, {'Content-Type': 'application/json'});
-  res.write('INVALID URL!!');
-  res.end();
+    });
+  }
+  else {
+    
+    res.writeHead(404, {'Content-Type': 'application/json'});
+    res.write('INVALID URL!!');
+    res.end();
+  }
 });
 
 app.listen(process.env.PORT || 8080);
