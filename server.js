@@ -17,6 +17,18 @@ app.use('/:id', function (req, res, next) {
   next();
 });
 
+
+app.route('/api').get(function(req, res) {
+    
+    console.log('Starting...');
+	
+	
+	
+    res.status(200);
+    res.send({message: "OK"});
+    
+});
+
 app.route(/new\/(http|https|ftp|ftps)\:\/\//).get(function (req, res) {
  
   var url = req.url.replace('new/', '');
