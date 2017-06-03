@@ -9,27 +9,8 @@ app.use(/new\/(http|https|ftp|ftps)\:\/\//, function (req, res, next) {
   next();
 });
 
-app.use(/new\/*/, function (req, res, next) {
-  next();
-});
-
-app.use('/:id', function (req, res, next) {
-  next();
-});
-
 app.use(/api, function (req, res, next) {
   next();
-});
-
-app.route('/api').get(function(req, res) {
-    
-    console.log('Starting...');
-	
-	
-	
-    res.status(200);
-    res.send({message: "OK"});
-    
 });
 
 app.route(/new\/(http|https|ftp|ftps)\:\/\//).get(function (req, res) {
@@ -60,49 +41,17 @@ app.route(/new\/(http|https|ftp|ftps)\:\/\//).get(function (req, res) {
   }
 });
 
-app.route(/new\/*/).get(function (req, res) {
-  
-  res.writeHead(404, {'Content-Type': 'application/json'});
-  res.write('INVALID URL!!');
-  res.end();
-  
-});
-
-app.route('/:id').get(function (req, res) {
-  
-  var id = req.url.replace('/', '');
-  
-  if (id.length === 12 || id.length === 24) {
+app.route('/api').post(function(req, res) {
     
-    mongodb.connect(connectionString, function(err, db) {
-    
-      if (!err) {
-        
-        db.collection('urls').find({
-            _id: new objectId(id)
-          
-        }).toArray(function(err2, data) {
-          
-          if (data[0] !== undefined) {
-            
-            res.redirect(data[0].url);
-          }
-          else {
-            
-            res.writeHead(404, {'Content-Type': 'application/json'});
-            res.write('INVALID URL!!');
-            res.end();
-          }
-        });
-      }
-    });
-  }
-  else {
-    
-    res.writeHead(404, {'Content-Type': 'application/json'});
-    res.write('INVALID URL!!');
+    console.log('Starting...');
+	
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    //res.write(JSON.stringify(url_res));
     res.end();
-  }
+	
+    //res.status(200);
+    //res.send({message: "OK"});
+    
 });
 
 app.listen(process.env.PORT || 8080);
