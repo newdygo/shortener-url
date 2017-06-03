@@ -17,6 +17,9 @@ app.use('/:id', function (req, res, next) {
   next();
 });
 
+app.use(/api, function (req, res, next) {
+  next();
+});
 
 app.route('/api').get(function(req, res) {
     
